@@ -1,16 +1,16 @@
-﻿using Contracts;
-using MassTransit;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Contracts;
+using MassTransit;
 
 namespace Subscriber
 {
-    class SomethingHappenedConsumer : IConsumer
+    internal class SomethingHappenedConsumer : IConsumer<ISomethingHappened>
     {
-        public async Task Consume(ConsumeContext<SomethingHappened> context)
+        public async Task Consume(ConsumeContext<ISomethingHappened> context)
         {
-            var ghfhgfhg = 1;
-            await Console.Out.WriteLineAsync($"Date: {context.Message.Time.ToString("dd-MMM-yyyy")}, Obeservation: {context.Message.Observation}");
+            var observation = $"Received SomethingHappenedMessage. Time: {context.Message.Time:dd-MMM-yyyy}, Observation: {context.Message.Observation}";
+            await Console.Out.WriteLineAsync(observation);
         }
     }
 }

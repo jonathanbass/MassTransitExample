@@ -1,33 +1,32 @@
-﻿using MassTransit;
-using System;
+﻿using System;
+using MassTransit;
 
 namespace Publisher
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        internal static void Main()
         {
-            var bus = Bus.Factory.CreateUsingRabbitMq(sbc =>
+            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
-                var host = sbc.Host(new Uri("rabbitmq://localhost"), h =>
+                cfg.Host(new Uri("rabbitmq://localhost"), h =>
                 {
                     h.Username("guest");
                     h.Password("guest");
                 });
-
-                //sbc.ReceiveEndpoint(host, "test_queue", ep =>
-                //{
-                //    ep.Handler<SomethingHappenedMessage>(context =>
-                //    {
-                //        return Console.Out.WriteLineAsync($"Received: {context.Message.Observation}, Time: {context.Message.Time.ToString("dd-MMM-yyyy")}");
-                //    });
-                //});
             });
 
             bus.Start();
 
-            var message = new SomethingHappenedMessage { Time = DateTime.Now, Observation = Guid.NewGuid().ToString() };
-            bus.Publish(message);
+            Console.Write("Please enter the number of messages to send: ");
+            var messageCount = Convert.ToInt32(Console.ReadLine());
+
+            for (var i = 0; i < messageCount; i++)
+            {
+                var message = new SomethingHappenedMessage { Time = DateTime.Now, Observation = Guid.NewGuid().ToString() };
+                bus.Publish(message);
+                Console.WriteLine($"Published SomethingHappenedMessage. Time: {message.Time}, Observation: {message.Observation}");
+            }
 
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();

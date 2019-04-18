@@ -1,13 +1,13 @@
-﻿using MassTransit;
-using System;
+﻿using System;
+using MassTransit;
 
 namespace Subscriber
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        internal static void Main()
         {
-            var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 var host = cfg.Host(new Uri("rabbitmq://localhost/"), h =>
                 {
@@ -15,18 +15,18 @@ namespace Subscriber
                     h.Password("guest");
                 });
 
-                cfg.ReceiveEndpoint(host, "test_queue", e =>
+                cfg.ReceiveEndpoint(host, "test_queue", ep =>
                 {
-                    e.Consumer<SomethingHappenedConsumer>();
+                    ep.Consumer<SomethingHappenedConsumer>();
                 });
             });
 
-            busControl.Start();
+            bus.Start();
 
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
 
-            busControl.Stop();
+            bus.Stop();
         }
     }
 }
